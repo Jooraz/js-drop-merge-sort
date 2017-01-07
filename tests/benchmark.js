@@ -1,3 +1,5 @@
+//Taken from: https://stackoverflow.com/a/14853974
+//Credits to Tomáš Zato
 Array.prototype.equals = function (array) {
     // if the other array is a falsy value, return
     if (!array)
@@ -13,8 +15,7 @@ Array.prototype.equals = function (array) {
             // recurse into the nested arrays
             if (!this[i] == array[i])
                 return false;
-        }
-        else if (this[i] != array[i]) {
+        } else if (this[i] != array[i]) {
             // Warning - two different object instances will never be equal: {x:20} != {x:20}
             return false;
         }
@@ -22,7 +23,9 @@ Array.prototype.equals = function (array) {
     return true;
 }
 // Hide method from for-in loops
-Object.defineProperty(Array.prototype, "equals", { enumerable: false });
+Object.defineProperty(Array.prototype, "equals", {
+    enumerable: false
+});
 
 var quickSort = require('../libs/quicksort').quickSort;
 var heapSort = require('../libs/heapsort').heapSort;

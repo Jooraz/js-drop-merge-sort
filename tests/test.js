@@ -21,10 +21,21 @@ var tests = [
 ];
 
 describe('Correct results', function () {
+    var asc = (x, y) => x - y;
+    var desc = (x, y) => y - x;
+
     tests.forEach(function (test) {
-        it('correctly sorts ' + test, function () {
-            var expected = test.sort();
-            var res = dmsort(test);
+        it('Correctly sorts ascending ' + test, function () {
+            var expected = test.sort(asc);
+            var res = dmsort(test, asc);
+            assert.deepEqual(res, expected);
+        });
+    });
+
+    tests.forEach(function (test) {
+        it('Correctly sorts descending ' + test, function () {
+            var expected = test.sort(desc);
+            var res = dmsort(test, desc);
             assert.deepEqual(res, expected);
         });
     });

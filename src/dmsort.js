@@ -3,7 +3,25 @@
     'use strict';
     var quickSort = require('../libs/quicksort').quickSort;
 
-    function dmsort(array) {
+    /**
+     * Standard comparing function which helps to order data in ascending order;
+     * 
+     * @param {any} x
+     * @param {any} y
+     * @returns x-y;
+     */
+    function cmpFunction(x, y) {
+        return x - y;
+    }
+
+    /**
+     * Sorts numeric array in ascending order
+     * 
+     * @param {Array} array
+     * @param {function} compareFunction
+     * @returns {Array}
+     */
+    function dmsort(array, compareFunction) {
         /// This speeds up well-ordered input by quite a lot.
         const DOUBLE_COMPARISONS = true;
 
@@ -26,6 +44,8 @@
         if (!array || array.length < 2) {
             return array;
         }
+
+        compareFunction = compareFunction || cmpFunction;
 
         let length = array.length;
         let dropped = [];
@@ -53,11 +73,11 @@
             let prev = array[write1];
             let curRead = array[read];
 
-            if (1 <= write && curRead < prev) {
+            if (1 <= write && compareFunction(curRead, prev) < 0) {
                 if (DOUBLE_COMPARISONS &&
                     num_dropped_in_row == 0 &&
                     2 <= write &&
-                    curRead >= array[write - 2]) {
+                    compareFunction(curRead, array[write - 2] >= 0)) {
                     dropped[droppedIndex++] = prev;
                     //dropped.push(prev);
                     array[write1] = curRead;
@@ -81,7 +101,7 @@
                     //if (FAST_BACKTRACKING) {
                     // Back-track until we can accept at least one of the recently dropped elements:
                     let max_of_dropped = Math.max(...array.slice(read, read + num_dropped_in_row + 1));
-                    while (1 <= write && max_of_dropped < array[write - 1]) {
+                    while (1 <= write && compareFunction(max_of_dropped, array[write - 1]) < 0) {
                         num_backtracked += 1;
                         write -= 1;
                     }
