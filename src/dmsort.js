@@ -73,11 +73,13 @@
             let prev = array[write1];
             let curRead = array[read];
 
+            //if (1 <= write && curRead < prev) {
             if (1 <= write && compareFunction(curRead, prev) < 0) {
                 if (DOUBLE_COMPARISONS &&
                     num_dropped_in_row == 0 &&
                     2 <= write &&
-                    compareFunction(curRead, array[write - 2] >= 0)) {
+                    // curRead >= array[write - 2]) {
+                    compareFunction(curRead, array[write - 2]) >= 0) {
                     dropped[droppedIndex++] = prev;
                     //dropped.push(prev);
                     array[write1] = curRead;
@@ -101,6 +103,7 @@
                     //if (FAST_BACKTRACKING) {
                     // Back-track until we can accept at least one of the recently dropped elements:
                     let max_of_dropped = Math.max(...array.slice(read, read + num_dropped_in_row + 1));
+                    // while (1 <= write && max_of_dropped < array[write - 1]) {
                     while (1 <= write && compareFunction(max_of_dropped, array[write - 1]) < 0) {
                         num_backtracked += 1;
                         write -= 1;
