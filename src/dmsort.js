@@ -2,6 +2,7 @@
 
     'use strict';
     var quickSort = require('../libs/quicksort').quickSort;
+
     function dmsort(array) {
         /// This speeds up well-ordered input by quite a lot.
         const DOUBLE_COMPARISONS = true;
@@ -22,15 +23,14 @@
         /// If more than this percentage of elements have been dropped, we abort.
         const EARLY_OUT_DISORDER_FRACTION = 0.4; /// seems optimal value for JS while using different quickSort implementation
 
-
-        let length = array.length;
-
-        if (length < 2) {
-            return;
+        if (!array || array.length < 2) {
+            return array;
         }
 
+        let length = array.length;
         let dropped = [];
-        dropped.length = length;
+        dropped.length = length; // O(n) additional memory size
+
         let num_dropped_in_row = 0;
         let write = 0;
         let read = 0;
@@ -39,9 +39,9 @@
         let droppedIndex = 0;
         while (read < length) {
             ///Fallback to quicksort
-            if (EARLY_OUT
-                && read === (length / EARLY_OUT_TEST_AT)
-                && droppedIndex > (read * EARLY_OUT_DISORDER_FRACTION)) {
+            if (EARLY_OUT &&
+                read === (length / EARLY_OUT_TEST_AT) &&
+                droppedIndex > (read * EARLY_OUT_DISORDER_FRACTION)) {
                 for (var a = 0; a < droppedIndex; a++) {
                     array[write + a] = dropped[a];
                 }
@@ -54,10 +54,10 @@
             let curRead = array[read];
 
             if (1 <= write && curRead < prev) {
-                if (DOUBLE_COMPARISONS
-                    && num_dropped_in_row == 0
-                    && 2 <= write
-                    && curRead >= array[write - 2]) {
+                if (DOUBLE_COMPARISONS &&
+                    num_dropped_in_row == 0 &&
+                    2 <= write &&
+                    curRead >= array[write - 2]) {
                     dropped[droppedIndex++] = prev;
                     //dropped.push(prev);
                     array[write1] = curRead;
@@ -121,4 +121,4 @@
     }
     exports.dmsort = dmsort;
 
-} (typeof exports === 'undefined' ? window : exports));
+}(typeof exports === 'undefined' ? window : exports));

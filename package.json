@@ -1,0 +1,31 @@
+{
+  "name": "js-drop-merge-sort",
+  "version": "0.1.0",
+  "description": "Drop-merge sorting algorithm",
+  "main": "src/dmsort.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  },
+  "scripts": {
+    "test": "mocha tests/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jooraz/js-drop-merge-sort.git"
+  },
+  "keywords": [
+    "algorithm",
+    "drop-merge",
+    "sort"
+  ],
+  "author": "Tomasz Jurkiewicz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jooraz/js-drop-merge-sort/issues"
+  },
+  "homepage": "https://github.com/Jooraz/js-drop-merge-sort#readme"
+}
