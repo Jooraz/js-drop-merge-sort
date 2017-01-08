@@ -31,62 +31,116 @@ var quickSort = require('../libs/quicksort').quickSort;
 var heapSort = require('../libs/heapsort').heapSort;
 var helpers = require('../tests/helpers');
 var dmsort = require('../src/dmsort').dmsort;
-var fs = require('fs');
+var ProgressBar = require('progress');
+var gnuplot = require('gnuplot');
 
-fs.writeFileSync("./results/All.txt", "");
-fs.writeFileSync("./results/Default.txt", "");
-fs.writeFileSync("./results/DropMergeSort.txt", "");
-fs.writeFileSync("./results/QuickSort.txt", "");
-fs.writeFileSync("./results/HeapSort.txt", "");
+let benchmarks = [{
+    count: 1 * 1000,
+    type: "int"
+}, {
+    count: 10 * 1000,
+    type: "int"
+}, {
+    count: 100 * 1000,
+    type: "int"
+}];
 
-for (let i = 1; i <= 100; i++) {
-    let factor = i / 100;
+benchmarks.forEach((el) => {
+    let count = el.count;
+    let type = el.type;
+    let results = [];
 
-    let loop = 5;
-    let time = [];
+    let bar = new ProgressBar(`Test of ${count} ${type} [:bar] :percent`, {
+        total: 100,
+        width: 40
+    });
 
-    let arrays = [];
-    for (let k = 0; k < 4; k++) {
-        time[k] = 0;
-    }
+    for (let i = 1; i <= 100; i++) {
+        let factor = i / 100;
 
-    for (let j = 0; j < loop; j++) {
-        let data = helpers.generateSet(factor);
+        let loop = 5;
+        let time = [];
+
         let arrays = [];
         for (let k = 0; k < 4; k++) {
-            arrays[k] = data.slice();
+            time[k] = 0;
+        }
+        for (let j = 0; j < loop; j++) {
+            let data = helpers.generateSet(factor, count);
+            let arrays = [];
+            for (let k = 0; k < 4; k++) {
+                arrays[k] = data.slice(); //just in case to ensure unsorted arrays
+            }
+            var f = (x, y) => x - y;
+            t = new Date();
+            arrays[0].sort(f);
+            time[0] += new Date() - t;
+
+            t = new Date();
+            dmsort(arrays[1], f);
+            time[1] += new Date() - t;
+
+            t = new Date();
+            quickSort(arrays[2], f);
+            time[2] += new Date() - t;
+
+            t = new Date();
+            heapSort(arrays[3], f);
+            time[3] += new Date() - t;
+
+            if (arrays[3].equals(arrays[2]) !== true || arrays[3].equals(arrays[1]) !== true || arrays[3].equals(arrays[0]) !== true) {
+                console.log(arrays[0]);
+                console.log(arrays[1]);
+                console.log(arrays[2]);
+                console.log(arrays[3]);
+                throw "NOT EQUAL FATAL ERROR";
+            }
+        }
+        for (let j = 0; j < time.length; j++) {
+            time[j] /= loop;
         }
 
-        t = new Date();
-        arrays[0].sort((x, y) => x - y);
-        time[0] += new Date() - t;
+        results.push(time.slice());
 
-        t = new Date();
-        dmsort(arrays[1]);
-        time[1] += new Date() - t;
+        bar.tick();
+    }
 
-        t = new Date();
-        quickSort(arrays[2]);
-        time[2] += new Date() - t;
+    let g = gnuplot()
+        .set('term png size 800, 600')
+        //.unset('output')
+        .set('style line 11 lc rgb "#808080" lt 1')
+        .set('border 3 back ls 11')
+        .set('tics nomirror')
+        //define grid
+        .set('style line 12 lc rgb "#808080" lt 0 lw 1')
+        .set('grid back ls 12')
 
-        t = new Date();
-        heapSort(arrays[3]);
-        time[3] += new Date() - t;
+        .set('style line 1 lc rgb "#AA0000" pt 0 ps 1 lt 1 lw 2')
+        .set('style line 2 lc rgb "#00AA00" pt  0 ps 1 lt 1 lw 2')
+        .set('style line 3 lc rgb "#0000AA" pt  0 ps 1 lt 1 lw 2')
+        .set('style line 4 lc rgb "#AA00AA" pt  0 ps 1 lt 1 lw 2')
 
-        if (arrays[3].equals(arrays[2]) !== true || arrays[3].equals(arrays[1]) !== true || arrays[3].equals(arrays[0]) !== true) {
-            throw "NOT EQUAL FATAL ERROR";
+        .set('key left top')
+
+        .set('xlabel "Randomization"')
+        .set('xtics format "%2.0f%%"')
+        //.set(`output out.png`)//set output "images/comparisons.png"
+        .set(`ylabel "ms to sort a ${count} semi-ordered ${type}"`)
+        .set('xrange [1:100]')
+        .set('autoscale y')
+        .set(`output "images/${count}${type}.png"`)
+        .plot(`'-' u ($1*1e2):2 t 'Default' w lp ls 1, \
+    '-' u ($1*1e2):2 t 'DropMergeSort' w lp ls 2, \
+    '-' u ($1*1e2):2 t 'QuickSort' w lp ls 3, \
+     '-' u ($1*1e2):2 t 'HeapSort' w lp ls 4`);
+
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < results.length; j++) {
+            let factor = (j + 1) / 100;
+            //console.log(`${factor} ${results[j][i]}`);
+            g.println(`${factor} ${results[j][i]}`);
         }
+        g.println(`e`);
     }
-    for (let j = 0; j < time.length; j++) {
-        time[j] /= loop;
-    }
-
-    var all = factor + "\t" + time.join("\t");
-    console.log(all);
-
-    fs.appendFileSync("./results/All.txt", all + "\r\n");
-    fs.appendFileSync("./results/Default.txt", factor + "\t" + time[0] + "\r\n");
-    fs.appendFileSync("./results/DropMergeSort.txt", factor + "\t" + time[1] + "\r\n");
-    fs.appendFileSync("./results/QuickSort.txt", factor + "\t" + time[2] + "\r\n");
-    fs.appendFileSync("./results/HeapSort.txt", factor + "\t" + time[3] + "\r\n");
-}
+    g.end();
+});
