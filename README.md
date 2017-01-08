@@ -8,7 +8,8 @@ Go there for details on the algorithm itself.
 
 Benchmarks:
 
-![Benchmark of sorting 1M integers](images/1000000int.png)
-![Benchmark of sorting 100k integers](images/100000int.png)
-![Benchmark of sorting 10k integers](images/10000int.png)
-![Benchmark of sorting 1k integers](images/1000int.png)
+![Benchmark of sorting 1M integers](images/1000000_int.png)
+![Benchmark of sorting 100k integers](images/1000000_int.png)
+![Speedup over Quicksort for 100k integers](images/disorder_1000000_int.png)
+![Benchmark of sorting 100k 100-byte strings](images/100000_string.png)
+![Speedup over Quicksort for 100k 100-byte strings](images/disorder_100000_string.png)

@@ -79,10 +79,17 @@
      */
     return function (array, cmp) {
       cmp = cmp || compare;
-      return quickSort(array, 0, array.length, cmp);
+      let toCompare = cmp;
+
+      let test = toCompare();
+      if (test === true || test === false) {
+        toCompare = (x, y) => cmp(x, y) === test ? -1 : 1;
+      }
+
+      return quickSort(array, 0, array.length, toCompare);
     };
-  }());
+  } ());
 
   exports.quickSort = quickSort;
 
-}(typeof exports === 'undefined' ? window : exports));
+} (typeof exports === 'undefined' ? window : exports));

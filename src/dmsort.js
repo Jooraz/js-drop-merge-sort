@@ -30,7 +30,7 @@
         /// If RECENCY is too small we are more dependent on nice data/luck.
         const RECENCY = 8;
         /// Back-track several elements at once. This is helpful when there are big clumps out-of-order.
-        //const FAST_BACKTRACKING = true;
+        const FAST_BACKTRACKING = true;
 
         /// Break early if we notice that the input is not ordered enough.
         const EARLY_OUT = true;
@@ -39,21 +39,28 @@
         const EARLY_OUT_TEST_AT = 4;
 
         /// If more than this percentage of elements have been dropped, we abort.
-        const EARLY_OUT_DISORDER_FRACTION = 0.4; /// seems optimal value for JS while using different quickSort implementation
+        const EARLY_OUT_DISORDER_FRACTION = 0.6;
 
         if (!array || array.length < 2) {
             return array;
         }
 
         compareFunction = compareFunction || cmpFunction;
+        let compare = compareFunction;
+
+        // Test for return of comparing function, change true/false to -1/1 or 1/-1;
+        let test = compare();
+        if (test === true || test === false) {
+            compare = (x, y) => compareFunction(x, y) === test ? -1 : 1;
+        }
 
         let length = array.length;
         let dropped = [];
         dropped.length = length; // O(n) additional memory size
 
         let num_dropped_in_row = 0;
-        let write = 0;
-        let read = 0;
+        let write = 0; // Index of where to write the next element to keep.
+        let read = 0;  // Index of the input stream.
 
 
         let droppedIndex = 0;
@@ -62,10 +69,11 @@
             if (EARLY_OUT &&
                 read === (length / EARLY_OUT_TEST_AT) &&
                 droppedIndex > (read * EARLY_OUT_DISORDER_FRACTION)) {
-                for (var a = 0; a < droppedIndex; a++) {
+                for (let a = 0; a < droppedIndex; a++) {
                     array[write + a] = dropped[a];
                 }
-                array = quickSort(array);
+                array = quickSort(array, compare);
+                //fallback
                 return array;
             }
 
@@ -73,13 +81,30 @@
             let prev = array[write1];
             let curRead = array[read];
 
-            //if (1 <= write && curRead < prev) {
-            if (1 <= write && compareFunction(curRead, prev) < 0) {
+            if (write == 0 || compare(curRead, prev) >= 0) {
+                // The element is order - keep it:
+                array[write] = curRead;
+                read += 1;
+                write += 1;
+                num_dropped_in_row = 0;
+            } else {
+                // The next element is smaller than the last stored one.
+                // The question is - should we drop the new element, or was accepting the previous element a mistake?
+
+                /*
+                   Check this situation:
+                   0 1 2 3 9 5 6 7  (the 9 is a one-off)
+                           | |
+                           | read
+                           write - 1
+                    Checking this improves performance because we catch common problems earlier (without back-tracking).
+                */
                 if (DOUBLE_COMPARISONS &&
                     num_dropped_in_row == 0 &&
                     2 <= write &&
                     // curRead >= array[write - 2]) {
-                    compareFunction(curRead, array[write - 2]) >= 0) {
+                    compare(curRead, array[write - 2]) >= 0) {
+                    // Quick undo: drop previously accepted element, and overwrite with new one:
                     dropped[droppedIndex++] = prev;
                     //dropped.push(prev);
                     array[write1] = curRead;
@@ -88,50 +113,67 @@
                 }
 
                 if (num_dropped_in_row < RECENCY) {
+                    // Drop it:
                     dropped[droppedIndex++] = curRead;
                     read += 1;
                     num_dropped_in_row += 1;
                 } else {
-                    var trunc_to_length = dropped.length - num_dropped_in_row;
-                    read -= num_dropped_in_row;
+                    /*
+                    We accepted something num_dropped_in_row elements back that made us drop all RECENCY subsequent items.
+                    Accepting that element was obviously a mistake - so let's undo it!
 
+                    Example problem (RECENCY = 3):    0 1 12 3 4 5 6
+                        0 1 12 is accepted. 3, 4, 5 will be rejected because they are larger than the last kept item (12).
+                        When we get to 5 we reach num_dropped_in_row == RECENCY.
+                        This will trigger an undo where we drop the 12.
+                        When we again go to 3, we will keep it because it is larger than the last kept item (1).
+
+                    Example worst-case (RECENCY = 3):   ...100 101 102 103 104 1 2 3 4 5 ....
+                        100-104 is accepted. When we get to 3 we reach num_dropped_in_row == RECENCY.
+                        We drop 104 and reset the read by RECENCY. We restart, and then we drop again.
+                        This can lead us to backtracking RECENCY number of elements
+                        as many times as the leading non-decreasing subsequence is long.
+                    */
+
+                    // Undo dropping the last num_dropped_in_row elements:
+                    let trunc_to_length = dropped.length - num_dropped_in_row;
                     droppedIndex -= num_dropped_in_row;
+                    read -= num_dropped_in_row;
 
                     let num_backtracked = 1;
                     write -= 1;
 
-                    //if (FAST_BACKTRACKING) {
-                    // Back-track until we can accept at least one of the recently dropped elements:
-                    let max_of_dropped = Math.max(...array.slice(read, read + num_dropped_in_row + 1));
-                    // while (1 <= write && max_of_dropped < array[write - 1]) {
-                    while (1 <= write && compareFunction(max_of_dropped, array[write - 1]) < 0) {
-                        num_backtracked += 1;
-                        write -= 1;
+                    if (FAST_BACKTRACKING) {
+                        // Back-track until we can accept at least one of the recently dropped elements:
+                        let max_of_dropped = Math.max(...array.slice(read, read + num_dropped_in_row + 1));
+                        // while (1 <= write && max_of_dropped < array[write - 1]) {
+                        while (1 <= write && compare(max_of_dropped, array[write - 1]) < 0) {
+                            num_backtracked += 1;
+                            write -= 1;
+                        }
                     }
-                    //} else {
-                    //}
 
-                    for (var a = 0; a < num_backtracked; a++) {
+                    // Optimized for JS to not change size of array
+                    // Drop the back-tracked elements:
+                    for (let a = 0; a < num_backtracked; a++) {
                         dropped[droppedIndex++] = array[write + a];
                     }
 
                     num_dropped_in_row = 0;
                 }
-            } else {
-                array[write] = curRead;
-                read += 1;
-                write += 1;
-                num_dropped_in_row = 0;
             }
         }
-        dropped = dropped.slice(0, droppedIndex);
-        dropped = quickSort(dropped);
-        //dropped = dropped.sort((x,y)=>x-y);
 
-        var back = array.length;
+        // ------------------------------------------------------------------------
+        // Optimized for JS, first resize of dropped array
+        // Second step: sort the dropped elements:
+        dropped.length = droppedIndex;
+        dropped = quickSort(dropped, compare);
+
+        let back = array.length;
         while (dropped.length > 0) {
-            var last_dropped = dropped.pop();
-            while (0 < write && last_dropped < array[write - 1]) {
+            let last_dropped = dropped.pop();
+            while (0 < write && compare(last_dropped, array[write - 1]) < 0) {
                 array[back - 1] = array[write - 1];
                 back--;
                 write--;
@@ -144,4 +186,4 @@
     }
     exports.dmsort = dmsort;
 
-}(typeof exports === 'undefined' ? window : exports));
+} (typeof exports === 'undefined' ? window : exports));
