@@ -43,6 +43,9 @@ let benchmarks = [{
 }, {
     count: 100 * 1000,
     type: "int"
+}, {
+    count: 1000 * 1000,
+    type: "int"
 }];
 
 benchmarks.forEach((el) => {
@@ -52,7 +55,7 @@ benchmarks.forEach((el) => {
 
     let bar = new ProgressBar(`Test of ${count} ${type} [:bar] :percent`, {
         total: 100,
-        width: 40
+        width: 30
     });
 
     for (let i = 1; i <= 100; i++) {
@@ -72,21 +75,25 @@ benchmarks.forEach((el) => {
                 arrays[k] = data.slice(); //just in case to ensure unsorted arrays
             }
             var f = (x, y) => x - y;
-            t = new Date();
+            t = process.hrtime();
             arrays[0].sort(f);
-            time[0] += new Date() - t;
+            let t2 = process.hrtime();
+            time[0] += (t2[0] - t[0]) * 1e9 + t2[1] - t[1];
 
-            t = new Date();
+            t = process.hrtime();
             dmsort(arrays[1], f);
-            time[1] += new Date() - t;
+            t2 = process.hrtime();
+            time[1] += (t2[0] - t[0]) * 1e9 + t2[1] - t[1];
 
-            t = new Date();
+            t = process.hrtime();
             quickSort(arrays[2], f);
-            time[2] += new Date() - t;
+            t2 = process.hrtime();
+            time[2] += (t2[0] - t[0]) * 1e9 + t2[1] - t[1];
 
-            t = new Date();
+            t = process.hrtime();
             heapSort(arrays[3], f);
-            time[3] += new Date() - t;
+            t2 = process.hrtime();
+            time[3] += (t2[0] - t[0]) * 1e9 + t2[1] - t[1];
 
             if (arrays[3].equals(arrays[2]) !== true || arrays[3].equals(arrays[1]) !== true || arrays[3].equals(arrays[0]) !== true) {
                 console.log(arrays[0]);
@@ -95,11 +102,13 @@ benchmarks.forEach((el) => {
                 console.log(arrays[3]);
                 throw "NOT EQUAL FATAL ERROR";
             }
-        }
+        } time[j]
         for (let j = 0; j < time.length; j++) {
             time[j] /= loop;
+            time[j] /= 1e6;//milliseconds
+            time[j] = time[j].toFixed(2);
         }
-
+        console.log(time.slice());
         results.push(time.slice());
 
         bar.tick();
