@@ -138,7 +138,7 @@ benchmarks.forEach((el) => {
         for (let j = 0; j < time.length; j++) {
             time[j] /= loop;
             time[j] /= 1e6;//milliseconds
-            time[j] = time[j].toFixed(2);
+            time[j] = +(time[j].toFixed(2));
         }
         results.push(time.slice());
 
@@ -207,7 +207,7 @@ benchmarks.forEach((el) => {
         .set('xlabel "Disorder"')
         .set('xtics format "%2.0f%%"')
         //.set(`output out.png`)//set output "images/comparisons.png"
-        .set(`ylabel "Speedup over Quick Sort"`)
+        .set(`ylabel "Speedup over Fastest Competitor"`)
         .set('xrange [1:100]')
         .set('autoscale y')
         .set(`output "images/disorder_${count}_${type}.png"`)
@@ -216,7 +216,11 @@ benchmarks.forEach((el) => {
 
     for (let i = 0; i < results.length; i++) {
         let factor = (i + 1) / 100;
-        let temp = results[i][2] / results[i][1];
+        let s = results[i].slice();
+        let dm = s[1];
+        s.splice(1,1);
+
+        let temp = Math.max(...s) / dm;
         temp = temp.toFixed(2);
         g.println(`${factor} ${temp}`);
     }
