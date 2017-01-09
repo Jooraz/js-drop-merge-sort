@@ -6,6 +6,9 @@
   "directories": {
     "test": "tests"
   },
+  "files": [
+    "src/dmsort.js"
+  ],
   "dependencies": {},
   "devDependencies": {
     "gnuplot": "^0.3.1",
