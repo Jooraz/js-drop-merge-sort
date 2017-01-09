@@ -217,10 +217,10 @@ benchmarks.forEach((el) => {
     for (let i = 0; i < results.length; i++) {
         let factor = (i + 1) / 100;
         let s = results[i].slice();
-        let dm = s[1];
+        let dm = results[i][1];
         s.splice(1,1);
 
-        let temp = Math.max(...s) / dm;
+        let temp = Math.min(...s) / dm;
         temp = temp.toFixed(2);
         g.println(`${factor} ${temp}`);
     }
