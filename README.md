@@ -1,3 +1,4 @@
+# js-drop-merge-sort [![Build Status](https://travis-ci.org/Jooraz/js-drop-merge-sort.svg?branch=master)](https://travis-ci.org/Jooraz/js-drop-merge-sort)
 This is a javascript implementation of drop-merge sort algorithm, originally seen on:
 
 https://github.com/emilk/drop-merge-sort
