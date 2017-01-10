@@ -4,7 +4,7 @@ https://github.com/emilk/drop-merge-sort
 
 ##Installation
 ```
-npm install quick-sort.js
+npm install drop-merge-sort
 ```
 
 ###Usage
