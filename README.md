@@ -41,6 +41,3 @@ Go there for details on the algorithm itself.
 ![Speedup over fastest competitor for 1M integers](images/disorder_1000000_int.png)
 ![Benchmark of sorting 100k 100-byte strings](images/100000_string.png)
 ![Speedup over fastest competitor for 100k 100-byte strings](images/disorder_100000_string.png)
-
-## TODO
-* Push to npm
