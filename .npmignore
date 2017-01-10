@@ -1,0 +1,6 @@
+.vscode
+images
+node_modules
+tests
+.travis.yml
+jsconfig.json

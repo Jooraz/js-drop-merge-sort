@@ -7,7 +7,9 @@
     "test": "tests"
   },
   "files": [
-    "src/dmsort.js"
+    "src/dmsort.js",
+    "libs/quicksort.js",
+    "index.js"
   ],
   "dependencies": {},
   "devDependencies": {

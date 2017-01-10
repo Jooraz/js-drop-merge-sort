@@ -1,6 +1,19 @@
-(function (exports) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.dmsort = factory();
+    }
+} (this, function () {
+    "use strict";
 
-    'use strict';
     var quickSort = require('../libs/quicksort').quickSort;
 
     /**
@@ -21,7 +34,7 @@
      * @param {function} compareFunction
      * @returns {Array}
      */
-    function dmsort(array, compareFunction) {
+    var dmsort = function (array, compareFunction) {
         /// This speeds up well-ordered input by quite a lot.
         const DOUBLE_COMPARISONS = true;
 
@@ -121,13 +134,13 @@
                     /*
                     We accepted something num_dropped_in_row elements back that made us drop all RECENCY subsequent items.
                     Accepting that element was obviously a mistake - so let's undo it!
-
+ 
                     Example problem (RECENCY = 3):    0 1 12 3 4 5 6
                         0 1 12 is accepted. 3, 4, 5 will be rejected because they are larger than the last kept item (12).
                         When we get to 5 we reach num_dropped_in_row == RECENCY.
                         This will trigger an undo where we drop the 12.
                         When we again go to 3, we will keep it because it is larger than the last kept item (1).
-
+ 
                     Example worst-case (RECENCY = 3):   ...100 101 102 103 104 1 2 3 4 5 ....
                         100-104 is accepted. When we get to 3 we reach num_dropped_in_row == RECENCY.
                         We drop 104 and reset the read by RECENCY. We restart, and then we drop again.
@@ -183,7 +196,7 @@
         }
 
         return array;
-    }
-    exports.dmsort = dmsort;
+    };
 
-} (typeof exports === 'undefined' ? window : exports));
+    return dmsort;
+}));

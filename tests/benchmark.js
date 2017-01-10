@@ -30,9 +30,9 @@ Object.defineProperty(Array.prototype, "equals", {
 
 // Benchmarks
 var quickSort = require('../libs/quicksort').quickSort;
-var heapSort = require('../libs/heapsort').heapSort;
-var helpers = require('../tests/helpers');
-var dmsort = require('../src/dmsort').dmsort;
+var heapSort = require('./heapsort').heapSort;
+var helpers = require('./helpers');
+var dmsort = require('../index.js');
 var ProgressBar = require('progress');
 var gnuplot = require('gnuplot');
 

@@ -1,5 +1,5 @@
 var assert = require('assert');
-var dmsort = require('../src/dmsort').dmsort;
+var dmsort = require('../index.js');
 
 var tests = [
     [],
