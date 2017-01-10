@@ -14,22 +14,22 @@ npm install quick-sort.js
 ``` javascript
 var dmsort = require('drop-merge-sort');
 
-var comparator = function(elem1, elem2) {
+var compareFunction = function(elem1, elem2) {
     return elem1 - elem2;// asc sort
 };
 
 var array = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
-array = dmsort(array, comparator);//desc sort
+array = dmsort(array, compareFunction);//desc sort
 
 console.log(array);
 ```
 
 ##API
 
-####dmsort(iterable, length, [[[fnGetter], [fnSetter]], [fnCompare]])
-+ ```iterable```: object like array
-+ ```fnCompare(elem1, elem2)```: function for comparing two elem of iterable
+####dmsort(array, [compareFunction])
++ ```array```: object like array
++ ```compareFunction(elem1, elem2)```: function for comparing two elem of iterable
    + Optional, if not given, will use : ```elem1 - elem2```
 
 Quicksort and Mergesort used in here are taken from https://github.com/mgechev/javascript-algorithms
