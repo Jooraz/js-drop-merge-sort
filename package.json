@@ -1,5 +1,5 @@
 {
-  "name": "js-drop-merge-sort",
+  "name": "drop-merge-sort",
   "version": "0.1.0",
   "description": "Drop-merge sorting algorithm",
   "main": "src/dmsort.js",
