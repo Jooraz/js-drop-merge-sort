@@ -1,4 +1,11 @@
-# js-drop-merge-sort [![Build Status](https://travis-ci.org/Jooraz/js-drop-merge-sort.svg?branch=master)](https://travis-ci.org/Jooraz/js-drop-merge-sort)
+# js-drop-merge-sort 
+
+[![Build Status](https://travis-ci.org/Jooraz/js-drop-merge-sort.svg?branch=master)](https://travis-ci.org/Jooraz/js-drop-merge-sort)
+[![Coverage Status](https://coveralls.io/repos/github/Jooraz/js-drop-merge-sort/badge.svg?branch=master)](https://coveralls.io/github/Jooraz/js-drop-merge-sort?branch=master)
+[![NPM version](https://img.shields.io/npm/v/drop-merge-sort.svg)](https://www.npmjs.com/package/drop-merge-sort)
+[![npm](https://img.shields.io/npm/dm/drop-merge-sort.svg)](https://www.npmjs.com/package/drop-merge-sort)
+[![license](https://img.shields.io/github/license/jooraz/js-drop-merge-sort.svg)](https://www.npmjs.com/package/drop-merge-sort)
+
 This is a javascript implementation of drop-merge sort algorithm, originally seen on:
 https://github.com/emilk/drop-merge-sort
 
