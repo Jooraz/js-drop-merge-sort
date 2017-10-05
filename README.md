@@ -44,6 +44,7 @@ Quicksort and Mergesort used in here are taken from https://github.com/mgechev/j
 Go there for details on the algorithm itself.
 
 ##Benchmarks
+Benchmarks were performed on i7-6700k CPU
 ![Benchmark of sorting 1M integers](images/1000000_int.png)
 ![Speedup over fastest competitor for 1M integers](images/disorder_1000000_int.png)
 ![Benchmark of sorting 100k 100-byte strings](images/100000_string.png)
