@@ -9,14 +9,14 @@
 This is a javascript implementation of drop-merge sort algorithm, originally seen on:
 https://github.com/emilk/drop-merge-sort
 
-##Installation
+## Installation
 ```
 npm install drop-merge-sort
 ```
 
-###Usage
+### Usage
 
-###Example
+### Example
 
 ``` javascript
 var dmsort = require('drop-merge-sort');
@@ -32,9 +32,9 @@ array = dmsort(array, compareFunction);//desc sort
 console.log(array);
 ```
 
-##API
+## API
 
-####dmsort(array, [compareFunction])
+#### dmsort(array, [compareFunction])
 + ```array```: object like array
 + ```compareFunction(elem1, elem2)```: function for comparing two elem of iterable
    + Optional, if not given, will use : ```elem1 - elem2```
@@ -43,7 +43,7 @@ Quicksort and Mergesort used in here are taken from https://github.com/mgechev/j
 
 Go there for details on the algorithm itself.
 
-##Benchmarks
+## Benchmarks
 Benchmarks were performed on i7-6700k CPU
 ![Benchmark of sorting 1M integers](images/1000000_int.png)
 ![Speedup over fastest competitor for 1M integers](images/disorder_1000000_int.png)
